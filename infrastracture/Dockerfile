@@ -1,8 +1,3 @@
-FROM ubuntu:latest
-LABEL authors="ВИОЛЕТТА"
-
-ENTRYPOINT ["top", "-b"]
-
 FROM python:3.9-slim
 
 # Set build argument for verbosity
