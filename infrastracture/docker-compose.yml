@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: "web"
+    restart: always
+    volumes:
+      - ..:/app
+    ports:
+      - "8080:80"
+    environment:
+      - PYTHONBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    depends_on:
+      - pgdb
+      - redis
+  pgdb:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: pgdb_new
+
+
+  redis:
+    image: redis:alpine
+    expose:
+      - 6379
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "10m"  # максимальный размер файла логов
+          max-file: "3"    # максимальное количество файлов логов
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+        - ./rabbitmq-data:/var/lib/rabbitmq/
+        - ./rabbitmq-log:/var/log/rabbitmq
+    logging:
+          driver: "json-file"
+          options:
+            max-size: "10m"  # максимальный размер файла логов
+            max-file: "3"    # максимальное количество файлов логов
+
+
+volumes:
+    postgres-data:
+    redis-data:
